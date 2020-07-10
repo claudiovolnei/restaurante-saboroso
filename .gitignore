@@ -1,0 +1,7 @@
+# Ignorando pasta node
+node_modules/
+
+# Ignorando bower
+public/admin/bower_components
+
+
