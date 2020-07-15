@@ -1,21 +1,20 @@
 var conn = require('./../inc/db');
 var express = require('express');
+var menus = require('./../inc/menus');
 var router = express.Router();
+var reservations = require('./../inc/reservations');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  conn.query(` 
-    SELECT * FROM tb_menus ORDER BY title
-  `, (err, results) => {
-    if (err) {
-      console.log(err);
-    }
-
+  menus.getMenus().then(results => {
     res.render('index', { 
       title: 'Restaurante Saboroso!',
-      menus: results });
+      menus: results,
+      isHome: true 
+    });
   });  
 });
+
 
 router.get('/contacts', function(req, res, next){
   res.render('contacts', {
@@ -25,20 +24,43 @@ router.get('/contacts', function(req, res, next){
   });
 });
 
-router.get('/menus', function(req, res, next){
-  res.render('menus', {
-    title: 'Menus - Restaurante Saboroso',
-    background: 'images/img_bg_1.jpg',
-    h1: 'Saboreie nosso menu!'
+router.get('/menus', function(req, res, next) {
+  menus.getMenus().then(results => {
+    res.render('menus', {
+      title: 'Menus - Restaurante Saboroso',
+      background: 'images/img_bg_1.jpg',
+      h1: 'Saboreie nosso menu!',
+      menus: results 
+    });
   });
 });
 
+router.post('/reservations', function(req, res, next) {
+  if(!req.body.name) {
+    reservations.render(req, res, "Digite o nome.");
+  } else if(!req.body.email) {
+    reservations.render(req, res, "Digite o email.");
+  } else if(!req.body.people) {
+    reservations.render(req, res, "Selecione as pessoas.");
+  } else if(!req.body.date) {
+    reservations.render(req, res, "Selecione uma data.");
+  } else if(!req.body.time) {
+    reservations.render(req, res, "Selecione um horário.");
+  } else {
+    reservations.save(req.body).then(results => {
+      req.body = {};
+      reservations.render(req, res, null, "Reserva realizada com sucesso!");
+    }).catch(err => {
+      reservations.render(req, res, err.message);
+    });
+  }
+  
+});
+
 router.get('/reservations', function(req, res, next){
-  res.render('reservations', {
-    title: 'Reservas - Restaurante Saboroso',
-    background: 'images/img_bg_2.jpg',
-    h1: 'Reserve uma Mesa!'
-  });
+
+  reservations.render(req,res);
+
 });
 
 router.get('/services', function(req, res, next){
