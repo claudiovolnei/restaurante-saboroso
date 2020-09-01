@@ -9,8 +9,29 @@ var redis = require('redis')
 var redisClient = redis.createClient();
 var indexRouter = require('./routes/index');
 var adminRouter = require('./routes/admin');
+var formidable = require('formidable');
+var path = require('path');
 
 var app = express();
+
+app.use(function(req, res, next) {
+  if (req.method === 'POST') {
+    var form = formidable.IncomingForm({
+      uploadDir: path.join(__dirname, '/public/images'),
+      keepExtenisons: true
+    });
+  
+    form.parse(req, function(err, fields, files) {
+  
+      req.fields = fields;
+      req.files = files;
+      next();
+    });
+  } else {
+    next();
+  }
+
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
