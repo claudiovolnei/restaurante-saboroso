@@ -19,7 +19,6 @@ var formidable = require('formidable');
 var app = express();
 
 app.use(function(req, res, next) {
-<<<<<<< HEAD
 
   if(req.method === 'POST') {
     
@@ -37,24 +36,6 @@ app.use(function(req, res, next) {
   } else {
     next();
   }
-=======
-  if (req.method === 'POST') {
-    var form = formidable.IncomingForm({
-      uploadDir: path.join(__dirname, '/public/images'),
-      keepExtenisons: true
-    });
-  
-    form.parse(req, function(err, fields, files) {
-  
-      req.fields = fields;
-      req.files = files;
-      next();
-    });
-  } else {
-    next();
-  }
-
->>>>>>> 00222ae3b738a8aa33b6a122b43bb122fdc56801
 });
 
 // view engine setup
